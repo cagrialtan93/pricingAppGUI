@@ -3,6 +3,8 @@
 // (powered by FernFlower decompiler)
 //
 
+import calculations.Calculation;
+
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -18,25 +20,33 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class LandingPage {
+public class LandingPage implements Calculation{
     JFrame jFrame = new JFrame("Fiyatlama");
-    JPanel jPanel = new JPanel(new GridLayout(8, 2));
+    JPanel jPanel = new JPanel(new GridLayout(10, 2));
     JLabel fiyatLabel = new JLabel("Fiyat giriniz", 0);
     JTextField fiyatJTextField = new JTextField();
     JLabel karLabel = new JLabel("Kar oranı giriniz.", 0);
     JTextField karJTextField = new JTextField();
-    JLabel trHbn11Label = new JLabel("Tr-HB-n11", 0);
-    JTextField trHbn11TextField = new JTextField();
+    JLabel trLabel = new JLabel("Trendyol", 0);
+    JTextField trTextField = new JTextField();
+
+    JLabel hbLabel = new JLabel("Hepsiburada", 0);
+    JTextField hbTextField = new JTextField();
+
+    JLabel n11Label = new JLabel("N11", 0);
+    JTextField n11TextField = new JTextField();
+
     JLabel amazonLabel = new JLabel("Amazon", 0);
     JTextField amazonTextField = new JTextField();
     JLabel pttLabel = new JLabel("Ptt", 0);
     JTextField pttTextField = new JTextField();
-    JLabel eTicaretLabel = new JLabel("Eticaret", 0);
+    JLabel eTicaretLabel = new JLabel("E-Ticaret", 0);
     JTextField eTicaretTextField = new JTextField();
     JLabel farmazonLabel = new JLabel("Farmazon", 0);
     JTextField farmazonLabel1 = new JTextField();
     JButton hesapla = new JButton("Hesapla");
     JButton temizle = new JButton("Temizle");
+    private Calculation calculation;
 
     public LandingPage() {
         this.jPanel.add(this.fiyatLabel);
@@ -65,7 +75,7 @@ public class LandingPage {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == 10){
+                if (e.getKeyCode() == 10) {
                     LandingPage.this.hesapla.doClick();
                 }
             }
@@ -76,9 +86,15 @@ public class LandingPage {
             }
         });
 
-        this.jPanel.add(this.trHbn11Label);
-        this.trHbn11TextField.setEditable(false);
-        this.jPanel.add(this.trHbn11TextField);
+        this.jPanel.add(trLabel);
+        this.jPanel.add(trTextField);
+
+        this.jPanel.add(hbLabel);
+        this.jPanel.add(hbTextField);
+
+        this.jPanel.add(n11Label);
+        this.jPanel.add(n11TextField);
+
         this.jPanel.add(this.amazonLabel);
         this.amazonTextField.setEditable(false);
         this.jPanel.add(this.amazonTextField);
@@ -103,35 +119,38 @@ public class LandingPage {
 
                         karOranı = Double.parseDouble(LandingPage.this.karJTextField.getText()) * 0.01 + 1.0;
                         double fiyat = Double.parseDouble(LandingPage.this.fiyatJTextField.getText());
-                        double trhbn11 = (fiyat + 40.0) / 0.83 * karOranı;
-                        int trhbn11v2 = (int)trhbn11;
-                        double amazon = (fiyat * karOranı + 29.0) / 0.89;
-                        int amazonv2 = (int)amazon;
-                        double ptt = (fiyat + 22.0) / 0.83 * karOranı;
-                        int pttv2 = (int)ptt;
-                        double eticaret = (fiyat + 25.0) / 0.97 * karOranı;
-                        int eticaretv2 = (int)eticaret;
-                        double farmazon = fiyat * 1.1 / 0.9;
-                        int farmazonv2 = (int)farmazon;
-                        LandingPage.this.trHbn11TextField.setText(String.valueOf(trhbn11v2));
-                        LandingPage.this.amazonTextField.setText(String.valueOf(amazonv2));
-                        LandingPage.this.pttTextField.setText(String.valueOf(pttv2));
-                        LandingPage.this.eTicaretTextField.setText(String.valueOf(eticaretv2));
-                        LandingPage.this.farmazonLabel1.setText(String.valueOf(farmazonv2));
+
+                        double hb = Math.round(((fiyat + 85.84) / 1.18 * karOranı) * 100.0) / 100.0;
+                        double ptt = Math.round(((fiyat + 65) * 1.17 * karOranı) * 100.0) / 100.0;
+                        double amazon = Math.round(((fiyat + 75) * 1.15 * karOranı) * 100.0) / 100.0;
+                        double farmazon = Math.round((fiyat * 1.1 * karOranı) * 100.0) / 100.0;
+                        double eticaret = Math.round(((fiyat + 80) * karOranı) * 100.0) / 100.0;
+                        double trendyolFiyat = calculateTrendyol(fiyat, karOranı);
+                        double n11Fiyat= calculaten11(fiyat, karOranı);
+
+
+                        LandingPage.this.trTextField.setText(String.valueOf(trendyolFiyat));
+                        LandingPage.this.n11TextField.setText(String.valueOf(n11Fiyat));
+                        LandingPage.this.hbTextField.setText(String.valueOf(hb));
+                        LandingPage.this.amazonTextField.setText(String.valueOf(amazon));
+                        LandingPage.this.pttTextField.setText(String.valueOf(ptt));
+                        LandingPage.this.eTicaretTextField.setText(String.valueOf(eticaret));
+                        LandingPage.this.farmazonLabel1.setText(String.valueOf(farmazon));
                     } else if (LandingPage.this.fiyatJTextField.getText().isEmpty()) {
-                        JOptionPane.showConfirmDialog((Component)null, "Bir fiyat girmediniz.", "Uyarı", -1);
+                        JOptionPane.showConfirmDialog((Component) null, "Bir fiyat girmediniz.", "Uyarı", -1);
                     } else if (LandingPage.this.karJTextField.getText().isEmpty()) {
-                        JOptionPane.showConfirmDialog((Component)null, "Bir kar oranı girmediniz.", "Uyarı", -1);
+                        JOptionPane.showConfirmDialog((Component) null, "Bir kar oranı girmediniz.", "Uyarı", -1);
                     }
                 }
-
             }
         });
         this.jPanel.add(this.temizle);
         this.temizle.addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
                 LandingPage.this.fiyatJTextField.setText("");
-                LandingPage.this.trHbn11TextField.setText("");
+                LandingPage.this.trTextField.setText("");
+                LandingPage.this.hbTextField.setText("");
+                LandingPage.this.n11TextField.setText("");
                 LandingPage.this.amazonTextField.setText("");
                 LandingPage.this.pttTextField.setText("");
                 LandingPage.this.eTicaretTextField.setText("");
@@ -154,7 +173,45 @@ public class LandingPage {
         this.jFrame.add(this.jPanel);
         this.jFrame.setSize(275, 250);
         this.jFrame.setDefaultCloseOperation(3);
-        this.jFrame.setLocationRelativeTo((Component)null);
+        this.jFrame.setLocationRelativeTo((Component) null);
         this.jFrame.setVisible(true);
+    }
+
+    @Override
+    public double calculateTrendyol(double fiyat, double karOrani) {
+        double trendyolFiyat = Math.round(((fiyat + 43) * 1.18 * karOrani) * 100.0) / 100.0;
+        double trendyolFiyat250 = Math.round(((fiyat + 72) * 1.18 * karOrani) * 100.0) / 100.0;
+        double trendyolFiyat251 = Math.round(((fiyat + 83.25) * 1.18 * karOrani) * 100.0) / 100.0;
+
+        if (trendyolFiyat < 150) {
+
+        }
+        if (trendyolFiyat >= 150 && trendyolFiyat < 250) {
+            trendyolFiyat = trendyolFiyat250;
+        }
+        if (trendyolFiyat >= 250) {
+            trendyolFiyat = trendyolFiyat251;
+        }
+
+        return trendyolFiyat;
+    }
+
+    @Override
+    public double calculaten11(double fiyat, double karOrani) {
+        double n11Fiyat = Math.round(((fiyat + 43) * 1.18 * karOrani) * 100.0) / 100.0;
+        double n11250 = Math.round(((fiyat + 75) * 1.18 * karOrani) * 100.0) / 100.0;
+        double n11251 = Math.round(((fiyat + 82) * 1.18 * karOrani) * 100.0) / 100.0;
+
+        if (n11Fiyat < 150) {
+
+        }
+        if (n11Fiyat >= 150 && n11Fiyat < 250) {
+            n11Fiyat = n11250;
+        }
+        if (n11Fiyat >= 250) {
+            n11Fiyat = n11251;
+        }
+
+        return n11Fiyat;
     }
 }

@@ -120,7 +120,7 @@ public class LandingPage implements Calculation{
                         karOranı = Double.parseDouble(LandingPage.this.karJTextField.getText()) * 0.01 + 1.0;
                         double fiyat = Double.parseDouble(LandingPage.this.fiyatJTextField.getText());
 
-                        double hb = Math.round(((fiyat + 85.84) / 1.18 * karOranı) * 100.0) / 100.0;
+                        double hb = Math.round(((fiyat + 85.84) * 1.18 * karOranı) * 100.0) / 100.0;
                         double ptt = Math.round(((fiyat + 65) * 1.17 * karOranı) * 100.0) / 100.0;
                         double amazon = Math.round(((fiyat + 75) * 1.15 * karOranı) * 100.0) / 100.0;
                         double farmazon = Math.round((fiyat * 1.1 * karOranı) * 100.0) / 100.0;

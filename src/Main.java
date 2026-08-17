@@ -1,5 +1,9 @@
 import com.sun.jdi.event.ExceptionEvent;
+import dao.CalculationConstantDAO;
 import database.DatabaseConnection;
+import database.DatabaseInitializer;
+import database.DatabaseSeeder;
+import model.CalculationConstant;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -9,9 +13,9 @@ public class Main {
     private static final String PASSWORD = "3435";
 
     public static void main(String[] args) {
-
         try (Connection connection = DatabaseConnection.getConnection()){
             System.out.println("Database connected.");
+            // DatabaseSeeder.seed();
         }
         catch (Exception e){
             System.out.println(e.getMessage());

@@ -199,73 +199,82 @@ public class LandingPage implements Calculation {
         return Math.round(v * 100.0) / 100.0;
     }
 
+    private double constantForProfit = 0.03;
+    private double result = 0;
+
     @Override
     public double calculateTrendyol(double fiyat, double karOrani) {
         double base = round((fiyat + 57) * 1.19 * karOrani);
+        double result = base;
         double mid = round((fiyat + 95) * 1.19 * karOrani);
         double high = round((fiyat + 108) * 1.19 * karOrani);
 
-        if (base >= 150 && base < 350) return mid;
-        if (base >= 350) return high;
-        return base;
+
+        if (base >= 150 && base < 350) result = mid;
+        if (result >= 350) result = high;
+
+        return result;
     }
 
     public double calculateHepsiBurada(double fiyat, double karOrani) {
         double base = round((fiyat + 50) * 1.19 * karOrani);
+        double result = base;
         double mid = round((fiyat + 87) * 1.19 * karOrani);
         double high = round((fiyat + 95) * 1.19 * karOrani);
 
-        if (base >= 200 && base < 400) return mid;
-        if (base >= 400) return high;
-        return base;
+        if (base >= 200 && base < 400) result = mid;
+        if (result >= 400) result = high;
+        return result;
     }
 
     @Override
     public double calculaten11(double fiyat, double karOrani) {
         double base = round((fiyat + 58) * 1.18 * karOrani);
+        double result = base;
         double mid = round((fiyat + 95) * 1.18 * karOrani);
         double high = round((fiyat + 109) * 1.18 * karOrani);
 
-        if (base >= 150 && base < 300) return mid;
-        if (base >= 300) return high;
-        return base;
+        if (base >= 150 && base < 300) result = mid;
+        if (result >= 300) result = high;
+        return result;
     }
 
     public double calculatenTSoft(double fiyat, double karOrani) {
-        double base = round((fiyat + 56) * (karOrani + 3));
-        double mid = round((fiyat + 106) * (karOrani + 3));
+
+        double base = round((fiyat + 56) * (karOrani + constantForProfit));
+        double mid = round((fiyat + 106) * (karOrani + constantForProfit));
 
         if (base >= 1000) return mid;
         return base;
     }
 
     public double calculatenTSoftBezlerPaketBir(double fiyat, double karOrani) {
-        double base = round((fiyat + 112) * (karOrani + 3));
-        double mid = round((fiyat + 162) * (karOrani + 3));
+        double base = round((fiyat + 112) * (karOrani + constantForProfit));
+        double mid = round((fiyat + 162) * (karOrani + constantForProfit));
 
         if (base >= 1000) return mid;
         return base;
     }
 
     public double calculatenTSoftBezlerPaketIki(double fiyat, double karOrani) {
-        double base = round((fiyat + 152) * (karOrani + 3));
-        double mid = round((fiyat + 202) * (karOrani + 3));
+        double base = round((fiyat + 152) * (karOrani + constantForProfit));
+        double mid = round((fiyat + 202) * (karOrani + constantForProfit));
 
         if (base >= 1000) return mid;
         return base;
     }
 
     public double calculatenTSoftBezlerPaketUc(double fiyat,double karOrani) {
-        double base = round((fiyat + 231) * (karOrani + 3));
-        double mid = round((fiyat + 281) * (karOrani + 3));
+        double base = round((fiyat + 231) * (karOrani + constantForProfit));
+        double mid = round((fiyat + 281) * (karOrani + constantForProfit));
 
         if (base >= 1000) return mid;
         return base;
     }
 
     public double calculatenTSoftBezlerPaketDort(double fiyat,double karOrani) {
-        double base = round((fiyat + 279) * (karOrani + 3));
-        double mid = round((fiyat + 329) * (karOrani + 3));
+        double base = round((fiyat + 279) * (karOrani + constantForProfit));
+        double mid = round((fiyat + 329) * (karOrani + constantForProfit));
 
         if (base >= 1000) return mid;
         return base;

@@ -1,4 +1,8 @@
+import com.sun.jdi.event.ExceptionEvent;
+import database.DatabaseConnection;
+
 import javax.swing.*;
+import java.sql.Connection;
 
 public class Main {
 
@@ -6,6 +10,12 @@ public class Main {
 
     public static void main(String[] args) {
 
+        try (Connection connection = DatabaseConnection.getConnection()){
+            System.out.println("Database connected.");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
            while (true) {
 
             JPasswordField passwordField = new JPasswordField();

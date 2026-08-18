@@ -1,7 +1,4 @@
-import calculations.HepsiburadaCalculator;
-import calculations.N11Calculator;
-import calculations.PttCalculator;
-import calculations.TrendyolCalculator;
+import calculations.*;
 import dao.CalculationConstantDAO;
 import model.CalculationConstant;
 
@@ -20,6 +17,7 @@ public class LandingPage {
     private final HepsiburadaCalculator hepsiburadaCalculator = new HepsiburadaCalculator(calculationConstantDAO);
     private final N11Calculator n11Calculator = new N11Calculator(calculationConstantDAO);
     private final PttCalculator pttCalculator = new PttCalculator(calculationConstantDAO);
+    private final FarmazonCalculator farmazonCalculator = new FarmazonCalculator(calculationConstantDAO);
 
     CalculationConstant baseFarmazon =  calculationConstantDAO.getConstant("Farmazon", "Base");
     CalculationConstant firstCaseFarmazon =  calculationConstantDAO.getConstant("Farmazon", "Case_1");
@@ -264,11 +262,13 @@ public class LandingPage {
                 tr.setText(String.valueOf(trendyolCalculator.calculateTrendyol(f, k)));
                 hb.setText(String.valueOf(hepsiburadaCalculator.calculateHepsiburada(f, k)));
                 n11.setText(String.valueOf(n11Calculator.calculateN11(f, k)));
-
                 ptt.setText(String.valueOf(pttCalculator.calculatePtt(f, k)));
 
                 amazon.setText(String.valueOf(round((f + baseAmazon.getFixedFee()) * baseAmazon.getMultiplier())));
+
+
                 farmazon.setText(String.valueOf(round(f * baseFarmazon.getMultiplier())));
+                System.out.println(farmazonCalculator.calculateFarmazon(f, k));
                 tsoft.setText(String.valueOf(calculatenTSoft(f, k)));
             }
 
@@ -300,6 +300,7 @@ public class LandingPage {
 
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketBir(f,k)));
                         farmazon.setText(String.valueOf(round(f * firstCaseFarmazon.getMultiplier())));
+                        System.out.println(farmazonCalculator.calculateCase(f, k,paket));
                     }
                     case 2 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
@@ -308,6 +309,8 @@ public class LandingPage {
 
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketIki(f,k)));
                         farmazon.setText(String.valueOf(round(f * secondCaseFarmazon.getMultiplier())));
+                        System.out.println(farmazonCalculator.calculateCase(f, k,paket));
+
                     }
                     case 3 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
@@ -316,6 +319,8 @@ public class LandingPage {
 
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketUc(f,k)));
                         farmazon.setText(String.valueOf(round(f * thirdCaseFarmazon.getMultiplier())));
+                        System.out.println(farmazonCalculator.calculateCase(f, k,paket));
+
                     }
                     case 4 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
@@ -324,6 +329,8 @@ public class LandingPage {
 
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketDort(f,k)));
                         farmazon.setText(String.valueOf(round(f * fourthCaseFarmazon.getMultiplier())));
+                        System.out.println(farmazonCalculator.calculateCase(f, k,paket));
+
                     }
                 }
             }

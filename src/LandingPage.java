@@ -21,8 +21,6 @@ public class LandingPage {
     private final TSoftCalculator tsoftCalculator = new TSoftCalculator(calculationConstantDAO);
     private final AmazonCalculator amazonCalculator = new AmazonCalculator(calculationConstantDAO);
 
-    CalculationConstant baseAmazon =  calculationConstantDAO.getConstant("Amazon", "Base");
-
     enum TabType {
         NORMAL,
         BEZLER

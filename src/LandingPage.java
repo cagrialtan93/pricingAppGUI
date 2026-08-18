@@ -1,3 +1,6 @@
+import calculations.HepsiburadaCalculator;
+import calculations.N11Calculator;
+import calculations.PttCalculator;
 import calculations.TrendyolCalculator;
 import dao.CalculationConstantDAO;
 import model.CalculationConstant;
@@ -14,32 +17,9 @@ public class LandingPage {
     JTabbedPane tabbedPane = new JTabbedPane();
     private final CalculationConstantDAO calculationConstantDAO = new CalculationConstantDAO();
     private final TrendyolCalculator trendyolCalculator = new TrendyolCalculator(calculationConstantDAO);
-
-    CalculationConstant basePTT = calculationConstantDAO.getConstant("PTT", "Normal");
-    CalculationConstant firstCasePTT = calculationConstantDAO.getConstant("PTT", "Case_1");
-    CalculationConstant secondCasePTT = calculationConstantDAO.getConstant("PTT", "Case_2");
-    CalculationConstant thirdCasePTT = calculationConstantDAO.getConstant("PTT", "Case_3");
-    CalculationConstant fourthCasePTT = calculationConstantDAO.getConstant("PTT", "Case_4");
-
-    CalculationConstant baseTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Base");
-    CalculationConstant midTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Mid");
-    CalculationConstant highTrendyol =  calculationConstantDAO.getConstant("Trendyol", "High");
-    CalculationConstant firstCaseTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Case_1");
-    CalculationConstant secondCaseTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Case_2");
-    CalculationConstant thirdCaseTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Case_3");
-    CalculationConstant fourthCaseTrendyol =  calculationConstantDAO.getConstant("Trendyol", "Case_4");
-
-    CalculationConstant baseHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Base");
-    CalculationConstant midHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Mid");
-    CalculationConstant highHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "High");
-    CalculationConstant firstCaseHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Case_1");
-    CalculationConstant secondCaseHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Case_2");
-    CalculationConstant thirdCaseHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Case_3");
-    CalculationConstant fourthCaseHepsiburada =  calculationConstantDAO.getConstant("Hepsiburada", "Case_4");
-
-    CalculationConstant baseN11 = calculationConstantDAO.getConstant("N11", "Base");
-    CalculationConstant midN11 = calculationConstantDAO.getConstant("N11", "Mid");
-    CalculationConstant highN11 = calculationConstantDAO.getConstant("N11", "High");
+    private final HepsiburadaCalculator hepsiburadaCalculator = new HepsiburadaCalculator(calculationConstantDAO);
+    private final N11Calculator n11Calculator = new N11Calculator(calculationConstantDAO);
+    private final PttCalculator pttCalculator = new PttCalculator(calculationConstantDAO);
 
     CalculationConstant baseFarmazon =  calculationConstantDAO.getConstant("Farmazon", "Base");
     CalculationConstant firstCaseFarmazon =  calculationConstantDAO.getConstant("Farmazon", "Case_1");
@@ -282,9 +262,11 @@ public class LandingPage {
             if (type == TabType.NORMAL) {
 
                 tr.setText(String.valueOf(trendyolCalculator.calculateTrendyol(f, k)));
-                n11.setText(String.valueOf(calculaten11(f, k)));
-                hb.setText(String.valueOf(calculateHepsiBurada(f, k)));
-                ptt.setText(String.valueOf(round((f + basePTT.getFixedFee()) * basePTT.getMultiplier() * k)));
+                hb.setText(String.valueOf(hepsiburadaCalculator.calculateHepsiburada(f, k)));
+                n11.setText(String.valueOf(n11Calculator.calculateN11(f, k)));
+
+                ptt.setText(String.valueOf(pttCalculator.calculatePtt(f, k)));
+
                 amazon.setText(String.valueOf(round((f + baseAmazon.getFixedFee()) * baseAmazon.getMultiplier())));
                 farmazon.setText(String.valueOf(round(f * baseFarmazon.getMultiplier())));
                 tsoft.setText(String.valueOf(calculatenTSoft(f, k)));
@@ -313,29 +295,33 @@ public class LandingPage {
                 switch (paket) {
                     case 1 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+                        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k,paket)));
+                        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k,paket)));
 
-                        shortCalculation(hb, ptt, f, k, firstCaseHepsiburada, firstCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketBir(f,k)));
                         farmazon.setText(String.valueOf(round(f * firstCaseFarmazon.getMultiplier())));
                     }
                     case 2 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+                        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k,paket)));
+                        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k,paket)));
 
-                        shortCalculation(hb, ptt, f, k, secondCaseHepsiburada, secondCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketIki(f,k)));
                         farmazon.setText(String.valueOf(round(f * secondCaseFarmazon.getMultiplier())));
                     }
                     case 3 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+                        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k,paket)));
+                        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k,paket)));
 
-                        shortCalculation(hb, ptt, f, k, thirdCaseHepsiburada, thirdCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketUc(f,k)));
                         farmazon.setText(String.valueOf(round(f * thirdCaseFarmazon.getMultiplier())));
                     }
                     case 4 -> {
                         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+                        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k,paket)));
+                        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k,paket)));
 
-                        shortCalculation(hb, ptt, f, k, fourthCaseHepsiburada, fourthCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketDort(f,k)));
                         farmazon.setText(String.valueOf(round(f * fourthCaseFarmazon.getMultiplier())));
                     }
@@ -360,8 +346,7 @@ public class LandingPage {
         return panel;
     }
 
-    private void shortCalculation(JTextField hb, JTextField ptt, double f, double k, CalculationConstant firstCaseHepsiburada, CalculationConstant firstCasePTT) {
-        hb.setText(String.valueOf(round((f + firstCaseHepsiburada.getFixedFee()) * firstCaseHepsiburada.getMultiplier() * k)));
+    private void shortCalculation(JTextField ptt, double f, double k, CalculationConstant firstCasePTT) {
         ptt.setText(String.valueOf(round((f + firstCasePTT.getFixedFee()) * firstCasePTT.getMultiplier() * k)));
     }
 
@@ -370,29 +355,6 @@ public class LandingPage {
     }
 
     private double result = 0;
-
-    public double calculateHepsiBurada(double fiyat, double karOrani) {
-        double base = round((fiyat + baseHepsiburada.getFixedFee()) * baseHepsiburada.getMultiplier() * karOrani);
-        double result = base;
-        double mid = round((fiyat + midHepsiburada.getFixedFee()) * midHepsiburada.getMultiplier() * karOrani);
-        double high = round((fiyat + highHepsiburada.getFixedFee()) * highHepsiburada.getMultiplier() * karOrani);
-
-        if (base >= 200 && base < 400) result = mid;
-        if (result >= 400) result = high;
-        return result;
-    }
-
-    public double calculaten11(double fiyat, double karOrani) {
-        double base = round((fiyat + baseN11.getFixedFee()) * baseN11.getMultiplier() * karOrani);
-        double result = base;
-        double mid = round((fiyat + midN11.getFixedFee()) * midN11.getMultiplier() * karOrani);
-        double high = round((fiyat + highN11.getFixedFee()) * highN11.getMultiplier() * karOrani);
-
-
-        if (base >= 150 && base < 300) result = mid;
-        if (result >= 300) result = high;
-        return result;
-    }
 
     public double calculatenTSoft(double fiyat, double karOrani) {
         double base = round((fiyat + firstBaseTSoft.getFixedFee()) * (karOrani + firstBaseTSoft.getProfitConstant()));

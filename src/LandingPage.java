@@ -1,16 +1,20 @@
-import calculations.Calculation;
+import calculations.TrendyolCalculator;
 import dao.CalculationConstantDAO;
 import model.CalculationConstant;
-import org.w3c.dom.ls.LSOutput;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class LandingPage implements Calculation {
+public class LandingPage {
 
     JFrame frame = new JFrame("Fiyatlama");
     JTabbedPane tabbedPane = new JTabbedPane();
-    private static CalculationConstantDAO calculationConstantDAO = new CalculationConstantDAO();
+    private final CalculationConstantDAO calculationConstantDAO = new CalculationConstantDAO();
+    private final TrendyolCalculator trendyolCalculator = new TrendyolCalculator(calculationConstantDAO);
+
     CalculationConstant basePTT = calculationConstantDAO.getConstant("PTT", "Normal");
     CalculationConstant firstCasePTT = calculationConstantDAO.getConstant("PTT", "Case_1");
     CalculationConstant secondCasePTT = calculationConstantDAO.getConstant("PTT", "Case_2");
@@ -64,12 +68,126 @@ public class LandingPage implements Calculation {
     public LandingPage() {
         tabbedPane.addTab("Normal", createPricingPanel(TabType.NORMAL));
         tabbedPane.addTab("Bezler", createPricingPanel(TabType.BEZLER));
+        tabbedPane.addTab("Admin", createPricingPanel(TabType.BEZLER));
+        createAdminPanel();
 
         frame.add(tabbedPane);
-        frame.setSize(400, 420);
+        frame.setSize(500, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private JPanel createAdminPanel() {
+        JPanel adminPanel = new JPanel(new BorderLayout(10, 10));
+
+        JPanel constantsPanel = new JPanel();
+        constantsPanel.setLayout(new BoxLayout(constantsPanel, BoxLayout.Y_AXIS));
+
+        List<CalculationConstant> constants = calculationConstantDAO.getAllConstants();
+
+        Map<CalculationConstant, JTextField[]> fields = new LinkedHashMap<>();
+
+        String currentMarketPlace = "";
+
+        for (CalculationConstant constant : constants) {
+            if (!currentMarketPlace.equals(constant.getMarketplace())) {
+                currentMarketPlace = constant.getMarketplace();
+
+                JLabel marketplaceLabel = new JLabel(currentMarketPlace);
+                marketplaceLabel.setFont(marketplaceLabel.getFont().deriveFont(Font.BOLD, 16f));
+                constantsPanel.add(Box.createVerticalStrut(10));
+                constantsPanel.add(marketplaceLabel);
+            }
+
+            JPanel row = new JPanel(new GridLayout(1, 5, 5, 5));
+            JLabel nameLabel = new JLabel(constant.getCalculationName());
+
+            JTextField fixedFeeField =
+                    new JTextField(String.valueOf(constant.getFixedFee()));
+
+            JTextField multiplierField =
+                    new JTextField(String.valueOf(constant.getMultiplier()));
+
+            JTextField profitConstantField =
+                    new JTextField(String.valueOf(
+                            constant.getProfitConstant()
+                    ));
+
+            row.add(nameLabel);
+            row.add(fixedFeeField);
+            row.add(multiplierField);
+            row.add(profitConstantField);
+
+            constantsPanel.add(row);
+
+            fields.put(constant, new JTextField[]{fixedFeeField, multiplierField, profitConstantField});
+        }
+
+        JPanel header = new JPanel(new GridLayout(1, 4));
+        header.add(new JLabel("Calculation"));
+        header.add(new JLabel("Fixed Fee"));
+        header.add(new JLabel("Multiplier"));
+        header.add(new JLabel("Profit Constant"));
+
+        adminPanel.add(header, BorderLayout.NORTH);
+
+        JScrollPane scrollPane =
+                new JScrollPane(constantsPanel);
+
+        adminPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JButton saveButton =
+                new JButton("Save Changes");
+
+        saveButton.addActionListener(e -> {
+
+            try {
+
+                for (Map.Entry<CalculationConstant, JTextField[]> entry
+                        : fields.entrySet()) {
+
+                    CalculationConstant constant = entry.getKey();
+                    JTextField[] constantFields = entry.getValue();
+
+                    double fixedFee =
+                            Double.parseDouble(
+                                    constantFields[0].getText()
+                            );
+
+                    double multiplier =
+                            Double.parseDouble(
+                                    constantFields[1].getText()
+                            );
+
+                    double profitConstant =
+                            Double.parseDouble(
+                                    constantFields[2].getText()
+                            );
+
+                    constant.setFixedFee(fixedFee);
+                    constant.setMultiplier(multiplier);
+                    constant.setProfitConstant(profitConstant);
+
+                    calculationConstantDAO.updateConstant(constant);
+                }
+
+                JOptionPane.showMessageDialog(
+                        adminPanel,
+                        "Changes saved successfully!"
+                );
+
+            } catch (NumberFormatException error) {
+                JOptionPane.showMessageDialog(
+                        adminPanel,
+                        "Please enter valid numbers",
+                        "Invalid value",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        });
+        adminPanel.add(saveButton, BorderLayout.SOUTH);
+        return adminPanel;
     }
 
     private JPanel createPricingPanel(TabType type) {
@@ -163,7 +281,7 @@ public class LandingPage implements Calculation {
 
             if (type == TabType.NORMAL) {
 
-                tr.setText(String.valueOf(calculateTrendyol(f, k)));
+                tr.setText(String.valueOf(trendyolCalculator.calculateTrendyol(f, k)));
                 n11.setText(String.valueOf(calculaten11(f, k)));
                 hb.setText(String.valueOf(calculateHepsiBurada(f, k)));
                 ptt.setText(String.valueOf(round((f + basePTT.getFixedFee()) * basePTT.getMultiplier() * k)));
@@ -194,22 +312,30 @@ public class LandingPage implements Calculation {
 
                 switch (paket) {
                     case 1 -> {
-                        shortCalculation(tr, hb, ptt, f, k, firstCaseTrendyol, firstCaseHepsiburada, firstCasePTT);
+                        tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+
+                        shortCalculation(hb, ptt, f, k, firstCaseHepsiburada, firstCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketBir(f,k)));
                         farmazon.setText(String.valueOf(round(f * firstCaseFarmazon.getMultiplier())));
                     }
                     case 2 -> {
-                        shortCalculation(tr, hb, ptt, f, k, secondCaseTrendyol, secondCaseHepsiburada, secondCasePTT);
+                        tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+
+                        shortCalculation(hb, ptt, f, k, secondCaseHepsiburada, secondCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketIki(f,k)));
                         farmazon.setText(String.valueOf(round(f * secondCaseFarmazon.getMultiplier())));
                     }
                     case 3 -> {
-                        shortCalculation(tr, hb, ptt, f, k, thirdCaseTrendyol, thirdCaseHepsiburada, thirdCasePTT);
+                        tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+
+                        shortCalculation(hb, ptt, f, k, thirdCaseHepsiburada, thirdCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketUc(f,k)));
                         farmazon.setText(String.valueOf(round(f * thirdCaseFarmazon.getMultiplier())));
                     }
                     case 4 -> {
-                        shortCalculation(tr, hb, ptt, f, k, fourthCaseTrendyol, fourthCaseHepsiburada, fourthCasePTT);
+                        tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
+
+                        shortCalculation(hb, ptt, f, k, fourthCaseHepsiburada, fourthCasePTT);
                         tsoft.setText(String.valueOf(calculatenTSoftBezlerPaketDort(f,k)));
                         farmazon.setText(String.valueOf(round(f * fourthCaseFarmazon.getMultiplier())));
                     }
@@ -234,8 +360,7 @@ public class LandingPage implements Calculation {
         return panel;
     }
 
-    private void shortCalculation(JTextField tr, JTextField hb, JTextField ptt, double f, double k, CalculationConstant firstCaseTrendyol, CalculationConstant firstCaseHepsiburada, CalculationConstant firstCasePTT) {
-        tr.setText(String.valueOf(round((f + firstCaseTrendyol.getFixedFee()) * firstCaseTrendyol.getMultiplier() * k)));
+    private void shortCalculation(JTextField hb, JTextField ptt, double f, double k, CalculationConstant firstCaseHepsiburada, CalculationConstant firstCasePTT) {
         hb.setText(String.valueOf(round((f + firstCaseHepsiburada.getFixedFee()) * firstCaseHepsiburada.getMultiplier() * k)));
         ptt.setText(String.valueOf(round((f + firstCasePTT.getFixedFee()) * firstCasePTT.getMultiplier() * k)));
     }
@@ -245,19 +370,6 @@ public class LandingPage implements Calculation {
     }
 
     private double result = 0;
-
-    @Override
-    public double calculateTrendyol(double fiyat, double karOrani) {
-        double base = round((fiyat + baseTrendyol.getFixedFee()) * baseTrendyol.getMultiplier() * karOrani);
-        double result = base;
-        double mid = round((fiyat + midTrendyol.getFixedFee()) * midTrendyol.getMultiplier() * karOrani);
-        double high = round((fiyat + highTrendyol.getFixedFee()) * highTrendyol.getMultiplier() * karOrani);
-
-        if (base >= 150 && base < 350) result = mid;
-        if (result >= 350) result = high;
-
-        return result;
-    }
 
     public double calculateHepsiBurada(double fiyat, double karOrani) {
         double base = round((fiyat + baseHepsiburada.getFixedFee()) * baseHepsiburada.getMultiplier() * karOrani);
@@ -270,7 +382,6 @@ public class LandingPage implements Calculation {
         return result;
     }
 
-    @Override
     public double calculaten11(double fiyat, double karOrani) {
         double base = round((fiyat + baseN11.getFixedFee()) * baseN11.getMultiplier() * karOrani);
         double result = base;

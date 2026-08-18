@@ -7,8 +7,64 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CalculationConstantDAO {
+
+    public List<CalculationConstant> getAllConstants() {
+        List<CalculationConstant> calculationConstants = new ArrayList<>();
+
+        String sql = """
+                SELECT id,
+                       marketplace,
+                       calculation_name,
+                       fixed_fee,
+                       multiplier,
+                       profit_constant
+                FROM calculation_constants
+                ORDER BY marketplace, id
+                """;
+
+        try (Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql); ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                CalculationConstant calculationConstant = new CalculationConstant(
+                        rs.getInt("id"),
+                        rs.getString("marketplace"),
+                        rs.getString("calculation_name"),
+                        rs.getDouble("fixed_fee"),
+                        rs.getDouble("multiplier"),
+                        rs.getDouble("profit_constant")
+                );
+
+                calculationConstants.add(calculationConstant);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return calculationConstants;
+    }
+
+    public void updateConstant(CalculationConstant constant) {
+        String sql = """
+                UPDATE calculation_constants
+                SET fixed_fee = ?,
+                    multiplier = ?,
+                    profit_constant = ?
+                WHERE id = ?               
+        """;
+
+        try (Connection connection = DatabaseConnection.getConnection(); PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setDouble(1, constant.getFixedFee());
+            statement.setDouble(2, constant.getMultiplier());
+            statement.setDouble(3, constant.getProfitConstant());
+            statement.setInt(4, constant.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public CalculationConstant getConstant(
             String marketplace,

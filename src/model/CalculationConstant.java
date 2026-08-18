@@ -12,10 +12,10 @@ public class CalculationConstant {
     }
 
     public CalculationConstant(int id, String marketplace, String calculationName, double fixedFee,  double multiplier, double profit_constant) {
-        this.calculationName = calculationName;
-        this.fixedFee = fixedFee;
         this.id = id;
         this.marketplace = marketplace;
+        this.calculationName = calculationName;
+        this.fixedFee = fixedFee;
         this.multiplier = multiplier;
         this.profitConstant = profit_constant;
     }

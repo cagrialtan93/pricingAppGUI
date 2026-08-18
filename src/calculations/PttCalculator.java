@@ -14,18 +14,6 @@ public class PttCalculator {
         return calculateNormal(fiyat, karOrani, "Normal");
     }
 
-    public double calculateBase(double fiyat, double karOrani){
-        return calculateNormal(fiyat, karOrani, "Base");
-    }
-
-    public double calculateMid(double fiyat, double karOrani){
-        return calculateNormal(fiyat, karOrani, "Mid");
-    }
-
-    public double calculateHigh(double fiyat, double karOrani){
-        return calculateNormal(fiyat, karOrani, "High");
-    }
-
     private double calculateNormal(double fiyat, double karOrani, String calculationName) {
         CalculationConstant constant = dao.getConstant("PTT",  calculationName);
         System.out.println(constant.getMarketplace());

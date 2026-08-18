@@ -10,8 +10,8 @@ public class AmazonCalculator {
         this.dao = dao;
     }
 
-    public double calculateAmazon(double fiyat){
-        CalculationConstant calculationConstant = dao.getConstant("Amazon","Base");
+    public double calculateAmazon(double fiyat) {
+        CalculationConstant calculationConstant = dao.getConstant("Amazon", "Base");
 
         return round((fiyat + calculationConstant.getFixedFee()) * calculationConstant.getMultiplier());
     }

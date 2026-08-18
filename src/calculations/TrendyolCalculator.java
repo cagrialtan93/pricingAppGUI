@@ -8,8 +8,6 @@ public class TrendyolCalculator {
     private final CalculationConstantDAO dao;
 
     public double calculateTrendyol(double fiyat, double karOrani) {
-
-
         double base = calculateNormal(fiyat, karOrani, "Base");
         double mid = calculateNormal(fiyat, karOrani, "Mid");
         double high = calculateNormal(fiyat, karOrani, "High");
@@ -21,20 +19,25 @@ public class TrendyolCalculator {
 
         return result;
     }
+
     public TrendyolCalculator(CalculationConstantDAO dao) {
         this.dao = dao;
     }
 
     private double calculateNormal(double fiyat, double karOrani, String calculationName) {
-        CalculationConstant constant = dao.getConstant("Trendyol",  calculationName);
+        CalculationConstant constant = dao.getConstant("Trendyol", calculationName);
 
         return round((fiyat + constant.getFixedFee()) * constant.getMultiplier() * karOrani);
     }
 
-    public double calculateCase(double fiyat, double karOrani, int paket){
+    private double calculationLogicCase(double fiyat, double karOrani, int paket) {
         CalculationConstant constant = dao.getConstant("Trendyol", "Case_" + paket);
 
         return round((fiyat + constant.getFixedFee()) * constant.getMultiplier() * karOrani);
+    }
+
+    public double calculateCase(double fiyat, double karOrani, int paket) {
+        return calculationLogicCase(fiyat, karOrani, paket);
     }
 
     private double round(double value) {

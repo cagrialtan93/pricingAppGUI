@@ -249,11 +249,9 @@ public class LandingPage {
                 ptt.setText(String.valueOf(pttCalculator.calculatePtt(f, k)));
                 farmazon.setText(String.valueOf(farmazonCalculator.calculateFarmazon(f, k)));
                 tsoft.setText(String.valueOf(tsoftCalculator.calculateTSoft(f, k)));
-                amazon.setText(String.valueOf(amazonCalculator.calculateAmazon(f)));
+                amazon.setText(String.valueOf(amazonCalculator.calculateAmazon(f, k)));
 
-            }
-
-            else {
+            } else {
 
                 if (finalPaketField.getText().isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Paket adedi giriniz (1-4)");
@@ -300,10 +298,10 @@ public class LandingPage {
 
     private void shortCalculation(JTextField tr, JTextField hb, JTextField ptt, JTextField farmazon, JTextField tsoft, double f, double k, int paket) {
         tr.setText(String.valueOf(trendyolCalculator.calculateCase(f, k, paket)));
-        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k,paket)));
-        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k,paket)));
-        farmazon.setText(String.valueOf(farmazonCalculator.calculateCase(f, k,paket)));
-        tsoft.setText(String.valueOf(tsoftCalculator.calculateCase(f, k,paket)));
+        hb.setText(String.valueOf(hepsiburadaCalculator.calculateCase(f, k, paket)));
+        ptt.setText(String.valueOf(pttCalculator.calculateCase(f, k, paket)));
+        farmazon.setText(String.valueOf(farmazonCalculator.calculateCase(f, k, paket)));
+        tsoft.setText(String.valueOf(tsoftCalculator.calculateCase(f, k, paket)));
     }
 
     public static void main(String[] args) {

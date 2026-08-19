@@ -61,6 +61,8 @@ public class CalculationConstantDAO {
             statement.setDouble(2, constant.getMultiplier());
             statement.setDouble(3, constant.getProfitConstant());
             statement.setInt(4, constant.getId());
+
+            statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }

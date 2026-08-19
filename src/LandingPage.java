@@ -23,14 +23,14 @@ public class LandingPage {
 
     enum TabType {
         NORMAL,
-        BEZLER
+        BEZLER,
+        ADMIN
     }
 
     public LandingPage() {
         tabbedPane.addTab("Normal", createPricingPanel(TabType.NORMAL));
         tabbedPane.addTab("Bezler", createPricingPanel(TabType.BEZLER));
-        tabbedPane.addTab("Admin", createPricingPanel(TabType.BEZLER));
-        createAdminPanel();
+        tabbedPane.addTab("Admin", createAdminPanel());
 
         frame.add(tabbedPane);
         frame.setSize(500, 600);
@@ -125,6 +125,7 @@ public class LandingPage {
                             Double.parseDouble(
                                     constantFields[2].getText()
                             );
+
 
                     constant.setFixedFee(fixedFee);
                     constant.setMultiplier(multiplier);
